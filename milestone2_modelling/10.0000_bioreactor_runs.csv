@@ -1,0 +1,31 @@
+run_id,organism,media_composition,pH,dissolved_oxygen_percent,growth_rate_per_hr
+a3e198e8,Escherichia coli,C:lactose 20 g/L; N:NH4Cl 2 g/L; P:K2HPO4 3.5 g/L; trace_metals:yes,6.38,73.8,0.287
+f70b219c,Escherichia coli,C:glycerol 20 g/L; N:NH4Cl 2 g/L; P:K2HPO4 3.5 g/L; trace_metals:yes,7.08,47.1,0.579
+7ac98b54,Saccharomyces cerevisiae,C:ethanol 6 g/L; N:urea 3 g/L; P:KH2PO4 3 g/L; trace_metals:yes,5.23,87.5,0.253
+41b53552,Saccharomyces cerevisiae,C:glucose 20 g/L; N:urea 3 g/L; P:KH2PO4 3 g/L; trace_metals:no,4.72,82.6,0.237
+569e52e4,Escherichia coli,C:lactose 20 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:yes,6.91,44.3,0.508
+b42554fe,Bacillus subtilis,C:glycerol 20 g/L; N:yeast extract 10 g/L; P:KH2PO4 3 g/L; trace_metals:no,7.45,73.6,0.466
+8b373e0b,Komagataeibacter xylinus,C:fructose 20 g/L; N:yeast extract 5 g/L; P:KH2PO4 2.5 g/L; trace_metals:yes,5.37,87.6,0.088
+d24ec664,Komagataella phaffii (Pichia pastoris),C:glycerol 20 g/L; N:(NH4)2SO4 4 g/L; P:KH2PO4 3 g/L; trace_metals:no,6.09,79.9,0.146
+027a86c2,Escherichia coli,C:glucose 20 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:no,6.6,60.8,0.59
+b4eb62ee,Komagataella phaffii (Pichia pastoris),C:glucose 20 g/L; N:(NH4)2SO4 4 g/L; P:KH2PO4 3 g/L; trace_metals:no,5.9,78.6,0.248
+95c41286,Clostridium acetobutylicum,C:starch 20 g/L; N:(NH4)2SO4 3 g/L; P:KH2PO4 2.5 g/L; trace_metals:no,5.37,1.4,0.079
+c16b8596,Bacillus subtilis,C:maltose 20 g/L; N:peptone 10 g/L; P:Na2HPO4 4 g/L; trace_metals:yes,8.1,47.7,0.16
+ff4ca1d3,Lactococcus lactis,C:lactose 20 g/L; N:NH4Cl 2 g/L; P:KH2PO4 3 g/L; trace_metals:yes,6.49,79.2,0.234
+9ce3a2c1,Komagataella phaffii (Pichia pastoris),C:methanol (feed) 4 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:no,6.19,61.2,0.069
+7098d4f7,Clostridium acetobutylicum,C:glucose 40 g/L; N:(NH4)2SO4 3 g/L; P:KH2PO4 2.5 g/L; trace_metals:no,6.35,2.3,0.245
+2a883e4a,Bacillus subtilis,C:glycerol 20 g/L; N:peptone 10 g/L; P:Na2HPO4 4 g/L; trace_metals:yes,7.58,58.8,0.402
+5fb1e626,Saccharomyces cerevisiae,C:ethanol 6 g/L; N:urea 3 g/L; P:K2HPO4 3.5 g/L; trace_metals:yes,5.01,41.1,0.188
+c16c5f3f,Komagataeibacter xylinus,C:glucose 20 g/L; N:peptone 5 g/L; P:KH2PO4 2.5 g/L; trace_metals:yes,5.27,78.3,0.104
+0c20aef5,Lactococcus lactis,C:lactose 20 g/L; N:yeast extract 10 g/L; P:KH2PO4 3 g/L; trace_metals:yes,5.36,36.1,0.05
+05b85b23,Komagataella phaffii (Pichia pastoris),C:glucose 20 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:no,5.39,57.4,0.142
+d84fc7c2,Saccharomyces cerevisiae,C:ethanol 6 g/L; N:NH4)2SO4 5 g/L; P:KH2PO4 3 g/L; trace_metals:yes,4.73,60.9,0.158
+f40180a8,Komagataeibacter xylinus,C:sucrose 20 g/L; N:yeast extract 5 g/L; P:KH2PO4 2.5 g/L; trace_metals:no,3.96,73.7,0.02
+47331d12,Saccharomyces cerevisiae,C:galactose 20 g/L; N:urea 3 g/L; P:KH2PO4 3 g/L; trace_metals:yes,5.24,54.4,0.36
+779c4aa2,Escherichia coli,C:glycerol 20 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:yes,6.39,59.5,0.367
+e5ac6976,Bacillus subtilis,C:glucose 20 g/L; N:peptone 10 g/L; P:Na2HPO4 4 g/L; trace_metals:yes,7.41,94.3,0.562
+bac63562,Komagataeibacter xylinus,C:fructose 20 g/L; N:peptone 5 g/L; P:KH2PO4 2.5 g/L; trace_metals:yes,4.17,77.7,0.037
+b1fa46e2,Komagataella phaffii (Pichia pastoris),C:methanol (feed) 4 g/L; N:(NH4)2SO4 4 g/L; P:KH2PO4 3 g/L; trace_metals:yes,5.94,81.8,0.148
+674ec2d5,Bacillus subtilis,C:glycerol 20 g/L; N:yeast extract 10 g/L; P:KH2PO4 3 g/L; trace_metals:no,6.61,22.4,0.211
+5f302706,Komagataella phaffii (Pichia pastoris),C:methanol (feed) 4 g/L; N:peptone 10 g/L; P:KH2PO4 3 g/L; trace_metals:yes,5.52,62.2,0.093
+223ddc47,Komagataeibacter xylinus,C:fructose 20 g/L; N:NH4Cl 2 g/L; P:KH2PO4 2.5 g/L; trace_metals:yes,4.38,31.5,0.052
