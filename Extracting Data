@@ -1,0 +1,55 @@
+import re
+import pdfplumber
+import pandas as pd
+import warnings
+import logging
+
+warnings.filterwarnings("ignore", category=UserWarning)
+logging.getLogger("pdfminer").setLevel(logging.ERROR)
+
+pdf_files = [
+    "044735v1.full.pdf",
+    "2024.07.25.605167v1.full.pdf",
+    "2025.03.25.645164v1.full.pdf",
+    "2024.10.17.618973v1.full.pdf",
+    "2021.02.25.432870v1.full.pdf"
+]
+
+patterns = {
+    "pH": r"pH\s*[=]?\s*(\d+(\.\d+)?)",
+    "temperature": r"(\d+(\.\d+)?)\s*°C",
+    "oxygen": r"(aerobic|anaerobic|oxygen|O2|aeration[^.,;\n]*)",
+    "bioreactor": r"(bioreactor|chemostat|fermentor|shake[- ]flask)[^.,;\n]*",
+    "growth_rate": r"(\d+\.\d+)\s*(h-1|h⁻1|per hour)"
+}
+
+def extract_text(pdf_path):
+    text = ""
+    with pdfplumber.open(pdf_path) as pdf:
+        for page in pdf.pages:
+            text += page.extract_text() or ""
+    return text
+
+results = []
+
+for pdf in pdf_files:
+    text = extract_text(pdf)
+    entry = {"file": pdf}
+    for key, pat in patterns.items():
+        matches = re.findall(pat, text, flags=re.IGNORECASE)
+        if matches:
+            clean = []
+            for m in matches:
+                if isinstance(m, tuple):
+                    clean.append(m[0])
+                else:
+                    clean.append(m)
+            entry[key] = "; ".join(set(clean))
+        else:
+            entry[key] = None
+    results.append(entry)
+
+df = pd.DataFrame(results)
+
+df.to_csv("growth_conditions_extracted.csv", index=False)
+print(df)
