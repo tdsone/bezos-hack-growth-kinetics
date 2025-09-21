@@ -1,0 +1,108 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import joblib
+
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+from sklearn.linear_model import ElasticNet
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, HistGradientBoostingRegressor
+
+csv_path = "10.0000_bioreactor_runs (1).csv"   
+df = pd.read_csv(csv_path)
+
+target = "growth_rate_per_hr"
+if target not in df.columns:
+    raise ValueError(f"Target column '{target}' not found in dataset")
+
+df = df.drop_duplicates()
+nunique = df.nunique(dropna=False)
+constant_cols = nunique[nunique <= 1].index.tolist()
+if constant_cols:
+    df = df.drop(columns=constant_cols)
+
+y = df[target]
+X = df.drop(columns=[target])
+
+cat_cols = list(X.select_dtypes(include=["object", "category"]).columns)
+for col in X.select_dtypes(include=["int64", "int32", "Int64"]).columns:
+    if 2 <= X[col].nunique() <= 30:
+        cat_cols.append(col)
+cat_cols = sorted(set(cat_cols))
+num_cols = [c for c in X.columns if c not in cat_cols]
+
+num_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler())
+])
+cat_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore", sparse=False))
+])
+pre = ColumnTransformer([
+    ("num", num_pipe, num_cols),
+    ("cat", cat_pipe, cat_cols)
+])
+
+
+models = {
+    "ElasticNet": ElasticNet(alpha=0.01, l1_ratio=0.1, random_state=42, max_iter=5000),
+    "RandomForest": RandomForestRegressor(n_estimators=400, random_state=42, n_jobs=-1),
+    "GradientBoosting": GradientBoostingRegressor(random_state=42),
+    "HistGradientBoosting": HistGradientBoostingRegressor(random_state=42)
+}
+
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42
+)
+
+
+os.makedirs("artifacts_individual_models", exist_ok=True)
+results = []
+
+for name, model in models.items():
+    print(f"\n=== Training {name} ===")
+    pipe = Pipeline([("pre", pre), ("model", model)])
+    pipe.fit(X_train, y_train)
+    pred = pipe.predict(X_test)
+
+  
+    rmse = mean_squared_error(y_test, pred, squared=False)
+    mae = mean_absolute_error(y_test, pred)
+    r2 = r2_score(y_test, pred)
+    results.append({"model": name, "rmse": rmse, "mae": mae, "r2": r2})
+
+    pred_df = pd.DataFrame({
+        "actual_growth_rate_per_hr": y_test.values,
+        "predicted_growth_rate_per_hr": pred
+    })
+    pred_df.to_csv(f"artifacts_individual_models/{name}_predictions.csv", index=False)
+
+    plt.figure(figsize=(7, 6))
+    plt.scatter(y_test, pred, alpha=0.6, edgecolor="k")
+    plt.plot([y_test.min(), y_test.max()],
+             [y_test.min(), y_test.max()],
+             "r--", lw=2, label="Ideal")
+    plt.xlabel("Actual growth_rate_per_hr")
+    plt.ylabel("Predicted growth_rate_per_hr")
+    plt.title(f"Actual vs Predicted ({name})")
+    plt.legend()
+    plt.tight_layout()
+
+    plt.savefig(f"artifacts_individual_models/{name}_pred_vs_actual.png", dpi=150)
+    plt.show()   
+    plt.close()
+
+    joblib.dump(pipe, f"artifacts_individual_models/{name}_model.joblib")
+
+
+results_df = pd.DataFrame(results)
+results_df.to_csv("artifacts_individual_models/results_summary.csv", index=False)
+print("\n=== Summary of Results ===")
+print(results_df)
