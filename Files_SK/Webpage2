@@ -1,0 +1,249 @@
+def create_excel_format_webpage():
+    
+    html_content = '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Microbial Growth Data - Excel Format</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .export-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #219a52;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 11px;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 8px 6px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #2c3e50;
+        }
+        td {
+            padding: 6px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e8f4fd;
+        }
+        .numeric {
+            text-align: center;
+        }
+        .paper-id {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .organism {
+            font-style: italic;
+            color: #27ae60;
+        }
+        .conditions {
+            font-size: 10px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Microbial Growth Data - Excel Format</h1>
+        
+        <div class="export-buttons">
+            <button onclick="exportToCSV()">Export to CSV</button>
+            <button onclick="copyToClipboard()">Copy for Excel</button>
+            <button onclick="printTable()">Print Table</button>
+        </div>
+
+        <table id="growthTable">
+            <thead>
+                <tr>
+                    <th>Paper (year)</th>
+                    <th>Organism / Strain</th>
+                    <th>Medium & Reactor / Format</th>
+                    <th>Temp</th>
+                    <th>pH (initial or controlled)</th>
+                    <th>Oxygen / Mixing</th>
+                    <th>Conditions/Notes</th>
+                    <th>Growth rate(s), h⁻¹</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="paper-id">2021.02.25.432870 (bioRxiv)</td>
+                    <td class="organism">Saccharomyces cerevisiae CEN.PK113-7D</td>
+                    <td>Synthetic Verduyn medium; 2 L Applikon bioreactor (1.2 L working vol.)</td>
+                    <td class="numeric">30 °C</td>
+                    <td class="numeric">pH controlled at 5.0</td>
+                    <td>Compressed air 0.5 L min⁻¹; 800 rpm</td>
+                    <td class="conditions">Aerobic batch cultivations on glucose or fructose</td>
+                    <td class="numeric">µMAX: 0.31 ± 0.01 (glucose), 0.32 ± 0.01 (fructose), ~0.21 (sucrose)</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2021.02.25.432870 (bioRxiv)</td>
+                    <td class="organism">Saccharomyces cerevisiae UFMG-CM-Y259</td>
+                    <td>Synthetic Verduyn medium; 2 L Applikon bioreactor (1.2 L working vol.)</td>
+                    <td class="numeric">30 °C</td>
+                    <td class="numeric">pH controlled at 5.0</td>
+                    <td>Compressed air 0.5 L min⁻¹; 800 rpm</td>
+                    <td class="conditions">Aerobic batch cultivations on glucose or fructose</td>
+                    <td class="numeric">µMAX: 0.29 ± 0.00 (glucose), 0.36 ± 0.02 (fructose), higher than glucose on sucrose</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2021.02.25.432870 (bioRxiv)</td>
+                    <td class="organism">Saccharomyces cerevisiae JP1</td>
+                    <td>Synthetic Verduyn medium; 2 L Applikon bioreactor (1.2 L working vol.)</td>
+                    <td class="numeric">30 °C</td>
+                    <td class="numeric">pH controlled at 5.0</td>
+                    <td>Compressed air 0.5 L min⁻¹; 800 rpm</td>
+                    <td class="conditions">Aerobic batch cultivations on glucose or fructose</td>
+                    <td class="numeric">µMAX: 0.28 ± 0.02 (glucose), 0.32 ± 0.02 (fructose), ~0.32 (sucrose)</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">044735 (2016, bioRxiv)</td>
+                    <td class="organism">Saccharomyces cerevisiae (chemostats)</td>
+                    <td>Continuous cultures; carbon- or nitrogen-limited chemostats (18 total)</td>
+                    <td class="numeric">— (not stated in main text)</td>
+                    <td class="numeric">— (not stated)</td>
+                    <td>— (not stated)</td>
+                    <td class="conditions">Steady states set by dilution rate under C/N limitation</td>
+                    <td class="numeric">Chemostat growth rates: 0.12, 0.20, 0.30 h⁻¹ (doubling times 5.8, 3.5, 2.3 h)</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2024.10.17.618973 (bioRxiv)</td>
+                    <td class="organism">Escherichia coli K-12 MG1655</td>
+                    <td>LB medium in 48-well plates; plate reader</td>
+                    <td class="numeric">37 °C</td>
+                    <td class="numeric">Initial pH 7.0 to 4.0 (HCl adjusted)</td>
+                    <td>Aerobic shaking in plate reader (alternating linear/orbital)</td>
+                    <td class="conditions">Multiphasic growth under near-lethal acid: no growth at pH 4.0; recovery above ~pH 4.4</td>
+                    <td class="numeric">No numerical µ or µmax values reported; qualitative: growth rate decreases with lower pH</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2024.10.17.618973 (bioRxiv)</td>
+                    <td class="organism">Salmonella Typhimurium</td>
+                    <td>LB medium in 48-well plates; plate reader</td>
+                    <td class="numeric">37 °C</td>
+                    <td class="numeric">pH 4.3–4.4 highlighted; Homo-PIPES buffering tested</td>
+                    <td>Aerobic shaking in plate reader (alternating linear/orbital)</td>
+                    <td class="conditions">Buffering strength shifts density dependence</td>
+                    <td class="numeric">Density-dependent lag; growth resumes as medium deacidifies to ~pH 4.4</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2024.07.25.605167 (bioRxiv)</td>
+                    <td class="organism">Activated sludge communities (multiple families)</td>
+                    <td>Full-scale WWTP systems (Hong Kong, Beijing, Aalborg)</td>
+                    <td class="numeric">Site ranges: 7–31 °C (HK), 15–27 °C (BJ-1), 15–29 °C (BJ-2), 8–22 °C (Aalborg)</td>
+                    <td class="numeric">Plant influent/ML conditions; DO considered as environmental factor</td>
+                    <td>Full-scale aeration (not quantified here)</td>
+                    <td class="conditions">Modeling links community dynamics to environmental factors (BOD, DO, ammonia, temperature, SRT)</td>
+                    <td class="numeric">Community dynamics; no organism-specific µmax values reported</td>
+                </tr>
+                <tr>
+                    <td class="paper-id">2025.03.25.645164 (bioRxiv)</td>
+                    <td class="organism">Methods (DGrowthR software)</td>
+                    <td>N/A (analytics/GP modeling of growth curves)</td>
+                    <td class="numeric">—</td>
+                    <td class="numeric">—</td>
+                    <td>—</td>
+                    <td class="conditions">Provides method to estimate max growth/death rates and doubling time from OD curves</td>
+                    <td class="numeric">No experimental organism/condition data reported</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 20px; font-size: 12px; color: #666;">
+            <h3>Additional Details from Papers:</h3>
+            <ul>
+                <li><strong>2021.02.25.432870:</strong> Also tested glucose/fructose mixtures and found strain-specific differences in sucrose utilization mechanisms</li>
+                <li><strong>044735:</strong> Study focused on transcriptome amplification; environmental conditions detailed in supplementary methods</li>
+                <li><strong>2024.10.17.618973:</strong> Also tested E. coli strains UTI89, CFT073, and various ECOR collection strains at pH 4.1</li>
+                <li><strong>2024.07.25.605167:</strong> Analyzed 466 samples from four full-scale systems over multiple years (2013-2020)</li>
+                <li><strong>2025.03.25.645164:</strong> Software paper demonstrating analysis on Salmonella enterica, Campylobacter jejuni, Vibrio cholerae, and E. coli datasets</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function exportToCSV() {
+            const table = document.getElementById('growthTable');
+            const rows = table.querySelectorAll('tr');
+            let csv = '';
+            
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('th, td');
+                const rowData = Array.from(cols).map(col => {
+                    let text = col.textContent.replace(/"/g, '""');
+                    return `"${text}"`;
+                });
+                csv += rowData.join(',') + '\\n';
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'microbial_growth_data_excel_format.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function copyToClipboard() {
+            const table = document.getElementById('growthTable');
+            const rows = table.querySelectorAll('tr');
+            let textData = '';
+            
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('th, td');
+                const rowData = Array.from(cols).map(col => col.textContent);
+                textData += rowData.join('\\t') + '\\n';
+            });
+            
+            navigator.clipboard.writeText(textData).then(() => {
+                alert('Table data copied to clipboard! You can now paste it directly into Excel.');
+            });
+        }
+
+        function printTable() {
+            window.print();
+        }
+    </script>
+</body>
+</html>'''
+    
+    return html_content
