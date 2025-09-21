@@ -35,11 +35,14 @@ function normalizeResults(dois: string[], data: unknown): FilterResult[] {
       }));
   }
 
-  // Case 2: [{ doi, hasGrowthRate }]
+  // Case 2: [{ doi, hasGrowthRate }] or []
   if (Array.isArray(data)) {
     const arr = data as Array<
       { doi?: unknown; hasGrowthRate?: unknown } | boolean
     >;
+    if (arr.length === 0) {
+      return [];
+    }
     if (
       arr.length > 0 &&
       typeof arr[0] === "object" &&
@@ -73,25 +76,7 @@ function normalizeResults(dois: string[], data: unknown): FilterResult[] {
     }
   }
 
-  throw new Error("Unexpected response from /api/filter");
-}
-
-export async function filterDois(dois: string[]): Promise<FilterResult[]> {
-  const url = `${apiBase()}/filter`;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ dois }),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
-  }
-
-  const data = await res.json();
-  return normalizeResults(dois, data);
+  throw new Error("Unexpected result payload from /result");
 }
 
 export async function submitDois(

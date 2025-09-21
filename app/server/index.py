@@ -47,9 +47,9 @@ def _load_doi_to_pdf_mapping() -> dict:
 
     import os 
 
-    # global _DOI_TO_PDF_KEY_CACHE
-    # if _DOI_TO_PDF_KEY_CACHE is not None and _DOI_TO_PDF_KEY_CACHE is not {}:
-    #     return _DOI_TO_PDF_KEY_CACHE
+    global _DOI_TO_PDF_KEY_CACHE
+    if _DOI_TO_PDF_KEY_CACHE is not None and _DOI_TO_PDF_KEY_CACHE is not {}:
+        return _DOI_TO_PDF_KEY_CACHE
     import json
     mapping: dict = {}
     try:
@@ -154,6 +154,9 @@ def download_pdf_for_doi(job_id: str, doi: str) -> str:
     s3 = boto3.client("s3")
     s3.download_file(bucket, pdf_key, dest_path)
 
+    # Ensure the downloaded PDF is persisted to the shared Volume
+    vol.commit()
+
     return dest_path
 
 @app.function(image=image, volumes={JOB_MOUNT: vol})
@@ -165,23 +168,44 @@ def extract_plaintext_from_pdfs(job_id: str) -> None:
     print("Running extract_plaintext_from_pdfs...")
     import os
     import PyPDF2
+    import time
 
     # Ensure we see any prior commits (e.g., downloads written by another function)
     vol.reload()
 
     input_folder = f"{JOB_MOUNT}/{job_id}/pdfs"
     output_folder = f"{JOB_MOUNT}/{job_id}/plaintext"
+    print(f"[convert] job={job_id} input={input_folder} output={output_folder}")
 
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
     if not os.path.isdir(input_folder):
+        print(f"[convert] input folder missing: {input_folder}")
         return
 
-    files = os.listdir(input_folder)
-    pdf_files = [f for f in files if f.lower().endswith(".pdf")]
+    # Wait briefly for downloads to materialize in the shared volume, in case
+    # upstream downloads are still committing.
+    max_wait_seconds = 20
+    waited = 0
+    pdf_files: list[str] = []
+    while waited <= max_wait_seconds:
+        if os.path.isdir(input_folder):
+            files = os.listdir(input_folder)
+            pdf_files = [f for f in files if f.lower().endswith(".pdf")]
+            if pdf_files:
+                break
+        time.sleep(1)
+        waited += 1
+        vol.reload()
     if not pdf_files:
+        print("[convert] no PDFs found to convert")
         return
+
+    preview = ", ".join(pdf_files[:5]) + (" ..." if len(pdf_files) > 5 else "")
+    print(f"[convert] found {len(pdf_files)} pdf(s): {preview}")
+
+    converted = skipped = failed = 0
 
     for pdf_file in pdf_files:
         pdf_path = os.path.join(input_folder, pdf_file)
@@ -189,21 +213,28 @@ def extract_plaintext_from_pdfs(job_id: str) -> None:
         text_path = os.path.join(output_folder, text_file_name)
 
         if os.path.exists(text_path):
+            skipped += 1
+            print(f"[convert] skip existing {text_file_name}")
             continue
 
         try:
             with open(pdf_path, "rb") as pdf_file_obj:
                 pdf_reader = PyPDF2.PdfReader(pdf_file_obj)
+                num_pages = len(pdf_reader.pages)
                 text_content = ""
-                for page_num in range(len(pdf_reader.pages)):
+                for page_num in range(num_pages):
                     page = pdf_reader.pages[page_num]
                     text_content += page.extract_text() or ""
                 with open(text_path, "w", encoding="utf-8") as text_file:
                     text_file.write(text_content)
-        except Exception:
-            # Skip problematic PDFs but continue processing others
+                converted += 1
+                print(f"[convert] wrote {text_file_name} (pages={num_pages})")
+        except Exception as e:
+            failed += 1
+            print(f"[convert] error converting '{pdf_file}': {e}")
             continue
 
+    print(f"[convert] done. converted={converted} skipped={skipped} failed={failed}")
     # Persist plaintext outputs for readers
     vol.commit()
 
@@ -353,7 +384,6 @@ def process_filter_job(job_id: str, dois: list[str]):
         os.makedirs(f"{JOB_MOUNT}/{job_id}", exist_ok=True)
         vol.commit()
 
-        # Orchestrate pipeline (stubs for now)
         download_pdfs_from_s3.remote(job_id, dois)
         extract_plaintext_from_pdfs.remote(job_id)
         final_result = filter_plaintext_for_growth.remote(job_id)
@@ -458,27 +488,5 @@ def fastapi_app():
             result=entry.get("result"),
             error=entry.get("error"),
         )
-
-    @app.post("/filter", response_model=FilterResponse)
-    async def filter(req: GenerateRequest):
-        # Run the real pipeline synchronously for immediate results
-        job_id = str(uuid.uuid4())
-        os.makedirs(f"{JOB_MOUNT}/{job_id}", exist_ok=True)
-        vol.commit()
-
-        download_pdfs_from_s3.remote(job_id, req.dois)
-        extract_plaintext_from_pdfs.remote(job_id)
-        final_result = filter_plaintext_for_growth.remote(job_id)
-
-        payload = final_result.get("results", []) if isinstance(final_result, dict) else []
-        results: List[FilterResult] = []
-        for item in payload:
-            try:
-                if isinstance(item, dict) and "doi" in item and "hasGrowthRate" in item:
-                    results.append(FilterResult(doi=str(item["doi"]), hasGrowthRate=bool(item["hasGrowthRate"])))
-            except Exception:
-                continue
-
-        return FilterResponse(results=results)
 
     return app
