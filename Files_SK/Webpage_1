@@ -1,0 +1,714 @@
+def create_comprehensive_webpage():
+    
+    html_content = '''<!DOCTYPE html>
+<html>
+<head>
+    <title>Microbial Growth Conditions and Rates</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .export-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #219a52;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e8f4fd;
+        }
+        .paper-header {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        .numeric {
+            text-align: right;
+        }
+        .notes {
+            font-style: italic;
+            color: #666;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Microbial Growth Conditions and Rates - Extracted Data</h1>
+        
+        <div class="export-buttons">
+            <button onclick="exportToCSV()">Export to CSV</button>
+            <button onclick="exportToExcel()">Export to Excel Format</button>
+            <button onclick="printTable()">Print Table</button>
+        </div>
+
+        <table id="growthTable">
+            <thead>
+                <tr>
+                    <th>Paper/Study</th>
+                    <th>Organism</th>
+                    <th>Strain</th>
+                    <th>Temperature (°C)</th>
+                    <th>pH</th>
+                    <th>Oxygen Conditions</th>
+                    <th>Bioreactor Type</th>
+                    <th>Growth Rate (h⁻¹)</th>
+                    <th>Carbon Source</th>
+                    <th>Medium Type</th>
+                    <th>Additional Conditions</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Paper 1: Growth Rate-Dependent Global Amplification of Gene Expression -->
+                <tr class="paper-header">
+                    <td colspan="12">Paper 1: Growth Rate-Dependent Global Amplification (Athanasiadou et al., 2016)</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.12</td>
+                    <td>Carbon-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 5.8 hours</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.20</td>
+                    <td>Carbon-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 3.5 hours</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.30</td>
+                    <td>Carbon-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 2.3 hours</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.12</td>
+                    <td>Nitrogen-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 5.8 hours</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.20</td>
+                    <td>Nitrogen-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 3.5 hours</td>
+                </tr>
+                <tr>
+                    <td>Athanasiadou et al., 2016</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Chemostat</td>
+                    <td class="numeric">0.30</td>
+                    <td>Nitrogen-limited</td>
+                    <td>Chemostat medium</td>
+                    <td>Steady-state chemostat</td>
+                    <td>Population doubling time: 2.3 hours</td>
+                </tr>
+
+                <!-- Paper 2: Building Predictive Understanding of Microbial Ecology -->
+                <tr class="paper-header">
+                    <td colspan="12">Paper 2: Microbial Ecology Modeling (Cheng et al., 2024)</td>
+                </tr>
+                <tr>
+                    <td>Cheng et al., 2024</td>
+                    <td>Mixed microbial community</td>
+                    <td>Activated sludge</td>
+                    <td>8-31</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Full-scale activated sludge</td>
+                    <td class="numeric">Variable</td>
+                    <td>Wastewater BOD</td>
+                    <td>Wastewater</td>
+                    <td>Hong Kong system</td>
+                    <td>BOD: 110-360 mg/L, SRT: 9-19 days</td>
+                </tr>
+                <tr>
+                    <td>Cheng et al., 2024</td>
+                    <td>Mixed microbial community</td>
+                    <td>Activated sludge</td>
+                    <td>15-27</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Full-scale activated sludge</td>
+                    <td class="numeric">Variable</td>
+                    <td>Wastewater BOD</td>
+                    <td>Wastewater</td>
+                    <td>Beijing-1 system</td>
+                    <td>BOD: 180-400 mg/L, SRT: ~10 days</td>
+                </tr>
+                <tr>
+                    <td>Cheng et al., 2024</td>
+                    <td>Mixed microbial community</td>
+                    <td>Activated sludge</td>
+                    <td>15-29</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Full-scale activated sludge</td>
+                    <td class="numeric">Variable</td>
+                    <td>Wastewater BOD</td>
+                    <td>Wastewater</td>
+                    <td>Beijing-2 system</td>
+                    <td>BOD: 230-1300 mg/L, SRT: ~17 days</td>
+                </tr>
+                <tr>
+                    <td>Cheng et al., 2024</td>
+                    <td>Mixed microbial community</td>
+                    <td>Activated sludge</td>
+                    <td>8-22</td>
+                    <td>Not specified</td>
+                    <td>Aerobic</td>
+                    <td>Full-scale activated sludge</td>
+                    <td class="numeric">Variable</td>
+                    <td>Wastewater BOD</td>
+                    <td>Wastewater</td>
+                    <td>Aalborg system</td>
+                    <td>BOD: 60-430 mg/L, SRT: 10-28 days</td>
+                </tr>
+
+                <!-- Paper 3: DGrowthR Analysis -->
+                <tr class="paper-header">
+                    <td colspan="12">Paper 3: DGrowthR Statistical Analysis (Feldl et al., 2025)</td>
+                </tr>
+                <tr>
+                    <td>Feldl et al., 2025</td>
+                    <td>Salmonella enterica</td>
+                    <td>Typhimurium</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Plate reader</td>
+                    <td class="numeric">Variable</td>
+                    <td>Chemical library screen</td>
+                    <td>Growth medium</td>
+                    <td>2,419 compounds tested</td>
+                    <td>16,128 growth curves analyzed</td>
+                </tr>
+                <tr>
+                    <td>Feldl et al., 2025</td>
+                    <td>Campylobacter jejuni</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Plate reader</td>
+                    <td class="numeric">Variable</td>
+                    <td>Chemical library screen</td>
+                    <td>Growth medium</td>
+                    <td>2,415 compounds tested</td>
+                    <td>4,686 growth curves analyzed</td>
+                </tr>
+                <tr>
+                    <td>Feldl et al., 2025</td>
+                    <td>Vibrio cholerae</td>
+                    <td>Wild-type and ΔCBASS</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Plate reader</td>
+                    <td class="numeric">Variable</td>
+                    <td>Chemical library</td>
+                    <td>Growth medium</td>
+                    <td>94 compounds at multiple concentrations</td>
+                    <td>2,304 growth curves analyzed</td>
+                </tr>
+                <tr>
+                    <td>Feldl et al., 2025</td>
+                    <td>Escherichia coli</td>
+                    <td>BW</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Not specified</td>
+                    <td>Plate reader</td>
+                    <td class="numeric">Variable</td>
+                    <td>Drug combinations</td>
+                    <td>Growth medium</td>
+                    <td>4,977 drug combinations</td>
+                    <td>111,668 growth curves analyzed</td>
+                </tr>
+
+                <!-- Paper 4: E. coli Acid Stress -->
+                <tr class="paper-header">
+                    <td colspan="12">Paper 4: E. coli Acid Stress Dynamics (Segura Munoz & Sourjik, 2024)</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>7.0</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Variable</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Normal growth conditions</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Reduced</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Mild acid stress</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>4.4</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Multiphasic</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Cell-density dependent growth</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>4.3</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Multiphasic</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Strong density dependence</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>4.2</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Multiphasic</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Pronounced multiphasic growth</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>4.1</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Multiphasic</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Extreme density dependence</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>MG1655</td>
+                    <td>37</td>
+                    <td>4.0</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">0</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>No growth observed</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>UTI89</td>
+                    <td>37</td>
+                    <td>4.1</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Variable</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Uropathogenic strain, density-dependent</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Escherichia coli</td>
+                    <td>CFT073</td>
+                    <td>37</td>
+                    <td>4.1</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Variable</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Uropathogenic strain, density-dependent</td>
+                </tr>
+                <tr>
+                    <td>Segura Munoz & Sourjik, 2024</td>
+                    <td>Salmonella enterica</td>
+                    <td>Typhimurium</td>
+                    <td>37</td>
+                    <td>4.1</td>
+                    <td>Aerobic</td>
+                    <td>48-well plates</td>
+                    <td class="numeric">Variable</td>
+                    <td>LB medium</td>
+                    <td>LB</td>
+                    <td>200 rpm shaking</td>
+                    <td>Similar acid response to E. coli</td>
+                </tr>
+
+                <!-- Paper 5: Yeast Sucrose Metabolism -->
+                <tr class="paper-header">
+                    <td colspan="12">Paper 5: Yeast Sucrose Metabolism (Rodrigues et al., 2021)</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>CEN.PK113-7D</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.21</td>
+                    <td>Sucrose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Laboratory strain, low sucrose utilization</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>UFMG-CM-Y259</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.37</td>
+                    <td>Sucrose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Wild isolate, high sucrose utilization</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>JP1</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.32</td>
+                    <td>Sucrose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Industrial strain, thermotolerant</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>CEN.PK113-7D</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.26</td>
+                    <td>Glucose + Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Equimolar glucose/fructose mixture</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>UFMG-CM-Y259</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.35</td>
+                    <td>Glucose + Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Equimolar glucose/fructose mixture</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>JP1</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.30</td>
+                    <td>Glucose + Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Equimolar glucose/fructose mixture</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>CEN.PK113-7D</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.31</td>
+                    <td>Glucose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure glucose</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>UFMG-CM-Y259</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.29</td>
+                    <td>Glucose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure glucose</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>JP1</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.28</td>
+                    <td>Glucose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure glucose</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>CEN.PK113-7D</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.32</td>
+                    <td>Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure fructose</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>UFMG-CM-Y259</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.36</td>
+                    <td>Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure fructose</td>
+                </tr>
+                <tr>
+                    <td>Rodrigues et al., 2021</td>
+                    <td>Saccharomyces cerevisiae</td>
+                    <td>JP1</td>
+                    <td>30</td>
+                    <td>5.0</td>
+                    <td>Aerobic</td>
+                    <td>2L bioreactor</td>
+                    <td class="numeric">0.32</td>
+                    <td>Fructose</td>
+                    <td>Synthetic medium</td>
+                    <td>800 rpm, 0.5 L/min air</td>
+                    <td>Pure fructose</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="notes" style="margin-top: 20px;">
+            <h3>Notes:</h3>
+            <ul>
+                <li>Growth rates marked as "Variable" indicate complex or condition-dependent growth patterns</li>
+                <li>Growth rates marked as "Multiphasic" indicate multi-stage growth patterns with different rates</li>
+                <li>Some studies focused on growth analysis methods rather than specific growth rate measurements</li>
+                <li>BOD = Biochemical Oxygen Demand; SRT = Solids Retention Time</li>
+                <li>Temperature ranges indicate variable conditions over time</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function exportToCSV() {
+            const table = document.getElementById('growthTable');
+            const rows = table.querySelectorAll('tr:not(.paper-header)');
+            let csv = '';
+            
+            // Add header
+            const headers = table.querySelectorAll('th');
+            const headerRow = Array.from(headers).map(th => `"${th.textContent}"`).join(',');
+            csv += headerRow + '\\n';
+            
+            // Add data rows
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                if (cols.length > 0) {
+                    const rowData = Array.from(cols).map(col => {
+                        let text = col.textContent.replace(/"/g, '""');
+                        return `"${text}"`;
+                    });
+                    csv += rowData.join(',') + '\\n';
+                }
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'microbial_growth_data.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportToExcel() {
+            const table = document.getElementById('growthTable');
+            const rows = table.querySelectorAll('tr:not(.paper-header)');
+            let textData = '';
+            
+            // Add header
+            const headers = table.querySelectorAll('th');
+            const headerRow = Array.from(headers).map(th => th.textContent);
+            textData += headerRow.join('\\t') + '\\n';
+            
+            // Add data rows
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                if (cols.length > 0) {
+                    const rowData = Array.from(cols).map(col => col.textContent);
+                    textData += rowData.join('\\t') + '\\n';
+                }
+            });
+            
+            navigator.clipboard.writeText(textData).then(() => {
+                alert('Table data copied to clipboard! You can now paste it directly into Excel.');
+            });
+        }
+
+        function printTable() {
+            window.print();
+        }
+    </script>
+</body>
+</html>'''
+    
+    return html_content
