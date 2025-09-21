@@ -1,0 +1,166 @@
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import joblib
+
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+# Models
+from sklearn.linear_model import LinearRegression, Ridge, ElasticNet
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, HistGradientBoostingRegressor
+
+try:
+    from xgboost import XGBRegressor
+    xgb_available = True
+except ImportError:
+    xgb_available = False
+
+csv_path = "10.0000_bioreactor_runs (1).csv"   # <-- change path if needed
+df = pd.read_csv(csv_path)
+
+target = "growth_rate_per_hr"
+features = ["organism", "media_composition", "pH", "dissolved_oxygen_percent"]
+
+df = df[features + [target]].drop_duplicates()
+X = df[features]
+y = df[target]
+
+num_cols = ["pH", "dissolved_oxygen_percent"]
+cat_cols = ["organism", "media_composition"]
+
+num_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="median")),
+    ("scaler", StandardScaler())
+])
+cat_pipe = Pipeline([
+    ("imputer", SimpleImputer(strategy="most_frequent")),
+    ("onehot", OneHotEncoder(handle_unknown="ignore", sparse=False))
+])
+pre = ColumnTransformer([
+    ("num", num_pipe, num_cols),
+    ("cat", cat_pipe, cat_cols)
+])
+
+param_grids = {
+    "LinearRegression": ({}, LinearRegression()),
+    "Ridge": (
+        {"model__alpha": [0.1, 1.0, 10.0]},
+        Ridge(random_state=42)
+    ),
+    "ElasticNet": (
+        {"model__alpha": [0.001, 0.01, 0.1, 1.0],
+         "model__l1_ratio": [0.1, 0.5, 0.9]},
+        ElasticNet(random_state=42, max_iter=5000)
+    ),
+    "SVR": (
+        {"model__C": [1, 10, 100],
+         "model__gamma": ["scale", 0.1, 0.01],
+         "model__kernel": ["rbf"]},
+        SVR()
+    ),
+    "RandomForest": (
+        {"model__n_estimators": [200, 400],
+         "model__max_depth": [None, 10, 20]},
+        RandomForestRegressor(random_state=42, n_jobs=-1)
+    ),
+    "GradientBoosting": (
+        {"model__n_estimators": [200, 400],
+         "model__learning_rate": [0.05, 0.1],
+         "model__max_depth": [3, 5]},
+        GradientBoostingRegressor(random_state=42)
+    ),
+    "HistGradientBoosting": (
+        {"model__max_iter": [200, 400],
+         "model__learning_rate": [0.05, 0.1],
+         "model__max_depth": [None, 10]},
+        HistGradientBoostingRegressor(random_state=42)
+    )
+}
+
+if xgb_available:
+    param_grids["XGBoost"] = (
+        {"model__n_estimators": [200, 400],
+         "model__learning_rate": [0.05, 0.1],
+         "model__max_depth": [3, 6]},
+        XGBRegressor(random_state=42, n_jobs=-1)
+    )
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.4, random_state=42
+)
+
+os.makedirs("artifacts_bioreactor_hypertuned_scatter", exist_ok=True)
+results = []
+
+for name, (param_grid, model) in param_grids.items():
+    print(f"\n=== Hypertuning {name} ===")
+    pipe = Pipeline([("pre", pre), ("model", model)])
+
+    search = GridSearchCV(
+        pipe,
+        param_grid=param_grid,
+        cv=3,
+        n_jobs=-1,
+        scoring="r2",
+        verbose=1
+    )
+    search.fit(X_train, y_train)
+
+    best_model = search.best_estimator_
+    pred = best_model.predict(X_test)
+
+    # Metrics
+    rmse = mean_squared_error(y_test, pred, squared=False)
+    mae = mean_absolute_error(y_test, pred)
+    r2 = r2_score(y_test, pred)
+    results.append({
+        "model": name,
+        "rmse": rmse,
+        "mae": mae,
+        "r2": r2,
+        "best_params": search.best_params_
+    })
+
+    pred_df = pd.DataFrame({
+        "actual_growth_rate_per_hr": y_test.values,
+        "predicted_growth_rate_per_hr": pred
+    })
+    pred_df.to_csv(f"artifacts_bioreactor_hypertuned_scatter/{name}_predictions.csv", index=False)
+
+    plt.figure(figsize=(7, 6))
+    plt.scatter(y_test, pred, alpha=0.5, edgecolor="k", s=20)
+    plt.plot([y_test.min(), y_test.max()],
+             [y_test.min(), y_test.max()],
+             "r--", lw=2, label="Ideal")
+    plt.xlabel("Actual growth_rate_per_hr")
+    plt.ylabel("Predicted growth_rate_per_hr")
+    plt.title(f"Actual vs Predicted ({name})")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"artifacts_bioreactor_hypertuned_scatter/{name}_pred_vs_actual.png", dpi=150)
+    plt.show()
+    plt.close()
+
+    joblib.dump(best_model, f"artifacts_bioreactor_hypertuned_scatter/{name}_model.joblib")
+
+
+results_df = pd.DataFrame(results)
+results_df.to_csv("artifacts_bioreactor_hypertuned_scatter/results_summary.csv", index=False)
+print("\n=== Hypertuned Results Summary ===")
+print(results_df)
+
+
+plt.figure(figsize=(10, 6))
+plt.bar(results_df["model"], results_df["rmse"], color="red", edgecolor="k")
+plt.xticks(rotation=45, ha="right")
+plt.ylabel("RMSE")
+plt.title("RMSE Comparison Across Hypertuned Models")
+plt.tight_layout()
+plt.savefig("artifacts_bioreactor_hypertuned_scatter/rmse_comparison.png", dpi=150)
+plt.show()
