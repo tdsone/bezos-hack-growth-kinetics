@@ -24,8 +24,9 @@ def fastapi_app():
 
     # --- CORS CONFIGURATION ---
     allowed_origins = [
-        "http://localhost:5173",  # local dev
+        "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://bezos-hack-growth-kinetics.vercel.app"
     ]
 
     app.add_middleware(
