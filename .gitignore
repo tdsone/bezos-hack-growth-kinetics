@@ -206,3 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 .DS_Store
+milestone1_collection/manifest.txt
+milestone1_collection/biorxiv-papers/670978.pdf
+milestone2_modelling/meca_keys.txt
