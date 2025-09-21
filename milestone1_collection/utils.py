@@ -112,5 +112,7 @@ def download_pdf_from_presigned(
 
 # Example:
 if __name__ == "__main__":
-    path = download_pdf_from_presigned("presigned_urls.tsv", out_dir="biorxiv-papers", index=0)
-    print("Saved to:", path)
+    for i in range(90,140):
+        path = download_pdf_from_presigned("presigned_urls.tsv", out_dir="biorxiv-papers-2", index=i)
+        print("Saved to:", path)
+
