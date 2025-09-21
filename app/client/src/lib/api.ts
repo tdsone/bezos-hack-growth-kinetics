@@ -3,6 +3,15 @@ export type FilterResult = {
   hasGrowthRate: boolean;
 };
 
+export type JobStatus = "queued" | "running" | "completed" | "failed";
+
+function apiBase(): string {
+  return (
+    (import.meta as any)?.env?.VITE_API_BASE ??
+    "https://tom-ellis-lab--paper2dataset-fastapi-app-dev.modal.run"
+  ).replace(/\/$/, "");
+}
+
 function normalizeResults(dois: string[], data: unknown): FilterResult[] {
   // Case 1: { results: Array<{ doi, hasGrowthRate }>} or [{ doi, hasGrowthRate }]
   if (
@@ -68,10 +77,7 @@ function normalizeResults(dois: string[], data: unknown): FilterResult[] {
 }
 
 export async function filterDois(dois: string[]): Promise<FilterResult[]> {
-  const base =
-    (import.meta as any)?.env?.VITE_API_BASE ??
-    "https://tom-ellis-lab--paper2dataset-fastapi-app-dev.modal.run";
-  const url = `${String(base).replace(/\/$/, "")}/filter`;
+  const url = `${apiBase()}/filter`;
 
   const res = await fetch(url, {
     method: "POST",
@@ -86,4 +92,60 @@ export async function filterDois(dois: string[]): Promise<FilterResult[]> {
 
   const data = await res.json();
   return normalizeResults(dois, data);
+}
+
+export async function submitDois(
+  dois: string[]
+): Promise<{ job_id: string; status: JobStatus }> {
+  const res = await fetch(`${apiBase()}/submit`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ dois }),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
+export async function fetchResult(jobId: string): Promise<{
+  job_id: string;
+  status: JobStatus;
+  result?: { results: FilterResult[] };
+  error?: string;
+}> {
+  const res = await fetch(`${apiBase()}/result/${encodeURIComponent(jobId)}`);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`API error ${res.status}: ${text || res.statusText}`);
+  }
+  return res.json();
+}
+
+export async function pollResult(
+  jobId: string,
+  opts: {
+    maxWaitMs?: number;
+    initialDelayMs?: number;
+    maxDelayMs?: number;
+  } = {}
+): Promise<FilterResult[]> {
+  const maxWaitMs = opts.maxWaitMs ?? 60_000;
+  const maxDelayMs = opts.maxDelayMs ?? 5_000;
+  let delay = opts.initialDelayMs ?? 300;
+  const start = Date.now();
+
+  while (Date.now() - start < maxWaitMs) {
+    const data = await fetchResult(jobId);
+    if (data.status === "completed") {
+      return normalizeResults([], data.result?.results ?? []);
+    }
+    if (data.status === "failed") {
+      throw new Error(data.error || "Job failed");
+    }
+    await new Promise((r) => setTimeout(r, delay));
+    delay = Math.min(Math.floor(delay * 1.5), maxDelayMs);
+  }
+  throw new Error("Timed out waiting for job result");
 }

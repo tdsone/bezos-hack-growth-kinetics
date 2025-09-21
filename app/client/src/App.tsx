@@ -3,7 +3,7 @@ import { useState } from "react";
 import DoiInput from "./components/DoiInput";
 import ResultsList from "./components/ResultsList";
 import { extractDois, readTextFromFile } from "./lib/doi";
-import { filterDois, type FilterResult } from "./lib/api";
+import { submitDois, pollResult, type FilterResult } from "./lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 
 function App() {
@@ -22,8 +22,9 @@ function App() {
     }
     setIsProcessing(true);
     try {
-      const data = await filterDois(dois);
-      setResults(data);
+      const { job_id } = await submitDois(dois);
+      const results = await pollResult(job_id, { maxWaitMs: 120_000 });
+      setResults(results);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to process DOIs");
     } finally {

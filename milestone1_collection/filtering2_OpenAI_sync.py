@@ -6,10 +6,6 @@ from openai import AsyncOpenAI # Import the async client
 import asyncio
 import time
 
-# Start timer
-start_time = time.time()
-
-
 # --- Instructions for using the OpenAI API ---
 # 1. Install the OpenAI Python library: pip install openai
 # 2. Get your API key from the OpenAI website.
