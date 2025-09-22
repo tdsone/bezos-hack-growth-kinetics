@@ -596,7 +596,8 @@ def fastapi_app():
     allowed_origins = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://bezos-hack-growth-kinetics.vercel.app"
+        "https://bezos-hack-growth-kinetics.vercel.app",
+        "https://www.paper2dataset.com"
     ]
 
     app.add_middleware(
