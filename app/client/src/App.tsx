@@ -23,7 +23,7 @@ function App() {
     setIsProcessing(true);
     try {
       const { job_id } = await submitDois(dois);
-      const results = await pollResult(job_id, { maxWaitMs: 120_000 });
+      const results = await pollResult(job_id, { maxWaitMs: 10 * 60_000 });
       setResults(results);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to process DOIs");

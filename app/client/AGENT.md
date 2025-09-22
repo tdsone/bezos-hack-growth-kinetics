@@ -13,9 +13,3 @@ Users should be able to:
 - Papers with growth rate should be shown in a list and highlighted in green with a checkmark if they contain GR data and red if not (with thext saying: "Does not contain growth rate data")
 
 ## Backend
-
-Endpoint:
-
-- POST /api/filter:
-  - Body: {dois: list[str]}
-  - returns true if the paper contains growth rate data and false if not as JSON

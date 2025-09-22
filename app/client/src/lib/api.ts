@@ -1,6 +1,8 @@
 export type FilterResult = {
   doi: string;
   hasGrowthRate: boolean;
+  datasetCsv?: string;
+  datasetError?: string;
 };
 
 export type JobStatus = "queued" | "running" | "completed" | "failed";
@@ -8,7 +10,7 @@ export type JobStatus = "queued" | "running" | "completed" | "failed";
 function apiBase(): string {
   return (
     (import.meta as any)?.env?.VITE_API_BASE ??
-    "https://tom-ellis-lab--paper2dataset-fastapi-app-dev.modal.run"
+    "https://tom-ellis-lab--paper2dataset-fastapi-app.modal.run"
   ).replace(/\/$/, "");
 }
 
@@ -23,6 +25,8 @@ function normalizeResults(dois: string[], data: unknown): FilterResult[] {
     const arr = (data as { results: unknown[] }).results as Array<{
       doi?: unknown;
       hasGrowthRate?: unknown;
+      datasetCsv?: unknown;
+      datasetError?: unknown;
     }>;
     return arr
       .filter(
@@ -32,6 +36,14 @@ function normalizeResults(dois: string[], data: unknown): FilterResult[] {
       .map((x) => ({
         doi: x.doi as string,
         hasGrowthRate: x.hasGrowthRate as boolean,
+        datasetCsv:
+          typeof x.datasetCsv === "string"
+            ? (x.datasetCsv as string)
+            : undefined,
+        datasetError:
+          typeof x.datasetError === "string"
+            ? (x.datasetError as string)
+            : undefined,
       }));
   }
 

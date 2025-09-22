@@ -370,6 +370,176 @@ def filter_plaintext_for_growth(job_id: str) -> dict:
 
     return {"results": results_list}
 
+@app.function(image=image, volumes={JOB_MOUNT: vol}, secrets=[openai_secret] if openai_secret else [])
+def extract_growth_datasets(job_id: str, filter_result: dict) -> dict:
+    """For each positive result, upload the corresponding PDF and extract CSV via OpenAI Responses.
+
+    Input filter_result shape: {"results": [{"doi": str, "hasGrowthRate": bool}, ...]}
+    Returns the same structure, with optional keys added per item:
+      - datasetCsv: str (may be empty on failure)
+      - datasetError: str (present on failure)
+    """
+    import os
+    from typing import Any
+    
+    # Ensure volume state is current
+    vol.reload()
+
+    results_in = filter_result.get("results") if isinstance(filter_result, dict) else None
+    if not isinstance(results_in, list):
+        return {"results": []}
+
+    try:
+        from openai import OpenAI
+    except Exception:
+        # OpenAI SDK not available
+        out: list[dict[str, Any]] = []
+        for item in results_in:
+            if isinstance(item, dict) and bool(item.get("hasGrowthRate")):
+                out.append({
+                    "doi": str(item.get("doi", "")),
+                    "hasGrowthRate": bool(item.get("hasGrowthRate")),
+                    "datasetCsv": "",
+                    "datasetError": "OpenAI SDK not available",
+                })
+            elif isinstance(item, dict):
+                out.append({
+                    "doi": str(item.get("doi", "")),
+                    "hasGrowthRate": bool(item.get("hasGrowthRate")),
+                })
+        return {"results": out}
+
+    client = OpenAI()
+
+    def _safe_base_for_doi(doi: str) -> str:
+        nd = _normalize_doi(doi)
+        return nd.replace("/", "_").replace(":", "_")
+
+    def _build_prompt(doi: str) -> str:
+        headers = [
+            "doi",
+            "organism",
+            "strain",
+            "medium",
+            "temperature_c",
+            "ph",
+            "oxygenation",
+            "vessel",
+            "method",
+            "growth_rate_value",
+            "growth_rate_unit",
+            "condition_notes",
+            "source_section",
+            "source_page",
+            "source_locator",
+            "summary",
+        ]
+        header_row = ",".join(headers)
+        return (
+            "You are given a scientific paper PDF. Extract growth rate data into a CSV.\n"
+            "- Return ONLY CSV text with a single header row exactly as follows: \n"
+            f"{header_row}\n"
+            "- Include one row per unique experimental condition or organism.\n"
+            "- Keep growth rate units AS REPORTED in the paper.\n"
+            "- Values may be empty if not present.\n"
+            "- The 'doi' column must be the DOI provided here: " + doi + "\n"
+            "- 'source_section' should be e.g., Results, Methods, Supplementary.\n"
+            "- 'source_page' should be the page number(s) where the value appears.\n"
+            "- 'source_locator' should identify tables/figures or section headers if applicable.\n"
+            "- 'summary' should be a one-sentence plain language note summarizing the row.\n"
+            "Output strictly CSV with no extra commentary, markdown, code fences, or surrounding text."
+        )
+
+    def _extract_csv_for_pdf(doi: str, pdf_path: str) -> tuple[str, str | None]:
+        """Returns (csv_text, error_or_none)."""
+        if not os.path.exists(pdf_path):
+            return ("", f"PDF not found: {pdf_path}")
+        try:
+            # Upload PDF file
+            with open(pdf_path, "rb") as f:
+                uploaded = client.files.create(file=f, purpose="assistants")
+
+            prompt = _build_prompt(doi)
+            try:
+                # Responses API with an input_text + input_file content block per docs
+                response = client.responses.create(
+                    model="gpt-5",
+                    input=[
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "input_text", "text": prompt},
+                                {"type": "input_file", "file_id": uploaded.id},
+                            ],
+                        }
+                    ],
+                )
+            except Exception as e:
+                return ("", f"API Error: {e}")
+
+            # Extract text safely from Responses object
+            csv_text: str | None = None
+            try:
+                # New SDKs often expose output_text convenience
+                csv_text = getattr(response, "output_text", None)
+            except Exception:
+                csv_text = None
+            if not csv_text:
+                try:
+                    # Attempt to reconstruct from content structure
+                    parts = []
+                    for out in getattr(response, "output", []) or []:
+                        for c in getattr(out, "content", []) or []:
+                            if getattr(c, "type", None) == "output_text":
+                                parts.append(getattr(getattr(c, "text", object()), "value", ""))
+                            elif getattr(c, "type", None) == "text":
+                                parts.append(getattr(c, "text", ""))
+                    csv_text = "".join([p for p in parts if isinstance(p, str)]) or None
+                except Exception:
+                    csv_text = None
+            if not csv_text:
+                return ("", "Empty response from model")
+
+            # Ensure we only return the CSV lines; defensively strip spaces
+            csv_text = csv_text.strip()
+            return (csv_text, None)
+        except Exception as e:
+            return ("", f"API Error: {e}")
+
+    output_results: list[dict] = []
+    pdf_dir = f"{JOB_MOUNT}/{job_id}/pdfs"
+
+    for item in results_in:
+        if not isinstance(item, dict):
+            continue
+        doi = str(item.get("doi", ""))
+        has = bool(item.get("hasGrowthRate"))
+        if not doi:
+            continue
+        if not has:
+            # Pass through unchanged
+            output_results.append({"doi": doi, "hasGrowthRate": has})
+            continue
+
+        base = _safe_base_for_doi(doi)
+        pdf_path = f"{pdf_dir}/{base}.pdf"
+        csv_text, err = _extract_csv_for_pdf(doi, pdf_path)
+        if err:
+            output_results.append({
+                "doi": doi,
+                "hasGrowthRate": True,
+                "datasetCsv": "",
+                "datasetError": str(err),
+            })
+        else:
+            output_results.append({
+                "doi": doi,
+                "hasGrowthRate": True,
+                "datasetCsv": csv_text,
+            })
+
+    return {"results": output_results}
+
 @app.function(image=image, timeout=60 * 10, volumes={JOB_MOUNT: vol})
 def process_filter_job(job_id: str, dois: list[str]):
     """Background worker that computes filter results and stores them in job_store."""
@@ -386,11 +556,14 @@ def process_filter_job(job_id: str, dois: list[str]):
 
         download_pdfs_from_s3.remote(job_id, dois)
         extract_plaintext_from_pdfs.remote(job_id)
-        final_result = filter_plaintext_for_growth.remote(job_id)
+        filtered = filter_plaintext_for_growth.remote(job_id)
+
+        # New step: extract datasets for positive papers
+        enriched = extract_growth_datasets.remote(job_id, filtered)
 
         job_store[job_id] = {
             "status": "completed",
-            "result": final_result,
+            "result": enriched,
         }
     except Exception as exc:
         job_store[job_id] = {
@@ -442,6 +615,8 @@ def fastapi_app():
     class FilterResult(BaseModel):
         doi: str
         hasGrowthRate: bool
+        datasetCsv: Optional[str] = None
+        datasetError: Optional[str] = None
 
     class FilterResponse(BaseModel):
         results: List[FilterResult]
