@@ -45,16 +45,16 @@ function App() {
     <div className="min-h-screen">
       <header className="border-b bg-white">
         <div className="mx-auto max-w-4xl px-4 py-4">
-          <h1 className="text-xl font-semibold">
-            BioRxiv Growth Rate Extractor
-          </h1>
+          <h1 className="text-xl font-semibold">Paper2Dataset</h1>
         </div>
       </header>
 
       <main className="mx-auto max-w-4xl px-4 py-6">
         <Card>
           <CardHeader>
-            <CardTitle>Filter papers by DOI</CardTitle>
+            <CardTitle>
+              Extract Growth Rate Experiment Data from any biorxiv paper
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <DoiInput
